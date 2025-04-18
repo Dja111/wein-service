@@ -36,8 +36,8 @@ jobs:
       with:
         gradle-version: '6.9.4'
 
-    - name: Clean with Gradle
-      run: gradle clean
+    #- name: Clean with Gradle
+      #run: gradle clean
 
     - name: Build with Gradle 6.9.4
       run: gradle build
