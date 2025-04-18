@@ -46,13 +46,15 @@ jobs:
     permissions:
       contents: read
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: dja111/wein-service
         tags: ${{ github.event.push.head.sha }}
         registry: docker.io
-        dockerfile: ./deployment/docker/Dockerfile
+        dockerfile: deployment/docker/Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
