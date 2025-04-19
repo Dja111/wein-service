@@ -55,7 +55,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v4 # Ex: v4.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
         with:
           args: >
-            -Dsonar.organization=Dja111
+            -Dsonar.organization=dja111
             -Dsonar.projectKey=Dja111_wein-service
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.branch.name=main
