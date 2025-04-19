@@ -59,6 +59,7 @@ jobs:
             -Dsonar.projectKey=dja111
             -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.branch.name=main
         #env:
           #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
