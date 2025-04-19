@@ -57,8 +57,10 @@ jobs:
           args: >
             -Dsonar.organization=Dja111
             -Dsonar.projectKey=dja111
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        #env:
+          #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker-build-push:
     runs-on: ubuntu-latest
