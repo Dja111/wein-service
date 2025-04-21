@@ -132,6 +132,7 @@ jobs:
           echo "checkout source branch"
           git checkout ${{ github.event.push.head.ref }}
           echo "updating image tag in values file"
+          echo " sha value: ${{ github.event.push.head.sha }}"
           sed -i "s,tag:.*,tag:\ ${{ github.event.push.head.sha }}," helm/weinservice/values.yaml
           git add . && git commit -m "update image tag [skip ci]"
           git push
