@@ -88,6 +88,8 @@ jobs:
     needs: sonarqube
     permissions:
       contents: read
+    outputs:
+      sha: ${{ steps.set-sha-step.outputs.sha }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -120,11 +122,14 @@ jobs:
         dockerfile: deployment/docker/Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      env:
-        COMMIT_SHA: ${{ github.event.push.head.sha }}
-    - name: Print commit SHA
-      run: |
-        echo "Commit: $COMMIT_SHA"
+    - name: Set commit SHA
+      id: set-sha-step
+      run: echo "sha=${github.event.push.head.sha}" >> $GITHUB_OUTPUT
+      #env:
+        #COMMIT_SHA: ${{ github.event.push.head.sha }}
+    #- name: Print commit SHA
+      #run: |
+        #echo "Commit: $COMMIT_SHA"
   update-image-tag-in-helm:
     runs-on: ubuntu-latest
     needs: docker-build-push
@@ -137,7 +142,8 @@ jobs:
           echo "checkout source branch"
           git checkout ${{ github.event.push.head.ref }}
           echo "updating image tag in values file"
-          echo " sha value: $SHA"
+          echo " sha value: $COMMIT_SHA"
+          echo "Commit SHA is: ${{ needs.docker-build-push.outputs.sha }}"
           sed -i "s,tag:.*,tag:\ $COMMIT_SHA," helm/weinservice/values.yaml
           git add . && git commit -m "update image tag [skip ci]"
           git push
