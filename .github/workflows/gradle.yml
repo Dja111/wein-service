@@ -124,7 +124,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Set commit SHA
       id: set-sha-step
-      run: echo "sha=${github.event.push.head.sha}" >> $GITHUB_OUTPUT
+      run: echo "sha=${{ github.event.push.head.sha }}" >> $GITHUB_OUTPUT
       #env:
         #COMMIT_SHA: ${{ github.event.push.head.sha }}
     #- name: Print commit SHA
