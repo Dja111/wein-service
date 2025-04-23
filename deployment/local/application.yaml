@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wein-service
+  namespace: argocd
+spec:
+  destination:
+    namespace: default
+    server: "https://kubernetes.default.svc"
+  project: default
+  source:
+    path: helm/weinservice
+    repoURL: "https://github.com/Dja111/wein-service-env"
+    targetRevision: HEAD
+    helm:
+      releaseName: weinservice
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    #syncOptions:
+      #- ApplyOutOfSyncOnly: true
