@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: wein-service
+  name: prometheus-grafana
   namespace: argocd
 spec:
   destination:
@@ -9,14 +9,15 @@ spec:
     server: "https://kubernetes.default.svc"
   project: default
   source:
-    path: helm/weinservice
-    repoURL: "https://github.com/Dja111/wein-service-env"
-    targetRevision: HEAD
+    chart: kube-prometheus-stack
+    repoURL: "https://prometheus-community.github.io/helm-charts"
+    targetRevision: 70.7.0
     helm:
-      releaseName: weinservice
+      releaseName: prometheus
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    #syncOptions:
+    syncOptions:
+      - ServerSideApply=true
       #- ApplyOutOfSyncOnly: true

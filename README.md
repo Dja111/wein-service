@@ -10,7 +10,7 @@ The wein-service provides RESTful CRUD (Create, Read, Update, Delete) operations
 
 This project serves as an application that can be deployed on Kubernetes clusters (e.g., Minikube, EKS) using a CI/CD pipeline powered by ArgoCD. To keep things lightweight and efficient, data is stored using an H2 in-memory database during development.
 
-The service also comes with its own wein-service-env repository, which contains the Helm configuration files needed to deploy the application on Minikube.
+The service also comes with its own [wein-service-env](https://github.com/Dja111/wein-service-env) repository, which contains the Helm configuration files needed to deploy the application on Minikube.
 
 Additionally, within the Deployment folder, you will find an architecture diagram showcasing the CI/CD pipeline's structure.
 

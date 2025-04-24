@@ -14,10 +14,10 @@ echo "add argocd Repo"
 helm repo add argo https://argoproj.github.io/argo-helm
 
 echo "Install argoCD"
-helm install argocd argo/argo-cd --version 7.8.28
+helm install argocd argo/argo-cd --version 7.8.28 -n argocd --create-namespace
 
 echo "List all components"
-kubectl get all
+kubectl get all -n argocd
 
 echo "add Prometheus for monotoring"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -38,11 +38,11 @@ echo "wait 50s for creating all the necessary element"
 sleep 50
 
 echo "Get ArgoCD initial password"
-PWD=$(kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+PWD=$(kubectl get -n argocd secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 echo "The initial password for ArgoCD is: $PWD"
 
 echo "Expose the ArgoCD server"
-kubectl port-forward svc/argocd-server 8080:443 > port-forward.log 2>&1 &
+kubectl port-forward -n argocd svc/argocd-server 8080:443 > port-forward.log 2>&1 &
 
 echo "Login to ArgoCD"
 argocd login localhost:8080 --username admin --password $PWD --insecure
