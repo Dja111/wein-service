@@ -157,6 +157,7 @@ jobs:
         uses: actions/checkout@v2
       - run: |
           sed -i "s,tag:.*,tag:\ ${{ needs.docker-build-push.outputs.sha }}," deployment/helm/weinservice/values.yaml
+          sed -i "s,version:.*,version:\ 0.1.0-${{ needs.docker-build-push.outputs.sha }}," deployment/helm/weinservice/chart.yaml
           helm package deployment/helm/weinservice
           helm registry login registry-1.docker.io --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
           helm push *.tgz oci://registry-1.docker.io/dja111
