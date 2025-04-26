@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 echo "Delete the cluster with the profile 'multi-node'"
 if ! minikube delete -p multi-node; then
