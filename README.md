@@ -2,7 +2,7 @@
 
 This service is based on the microservice architectur.
 
-Ps: This Branch shows an alternativ CI without the using of the [wein-service-env](https://github.com/Dja111/wein-service-env) repository.
+PS: This branch demonstrates an alternative CI setup that does not use the [wein-service-env](https://github.com/Dja111/wein-service-env) repository.
 
 ## Description
 
