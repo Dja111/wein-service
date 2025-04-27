@@ -2,6 +2,8 @@
 
 This service is based on the microservice architectur.
 
+PS: This branch demonstrates an alternative CI setup that does not use the [wein-service-env](https://github.com/Dja111/wein-service-env) repository.
+
 ## Description
 
 The wein-service provides RESTful CRUD (Create, Read, Update, Delete) operations for managing wein models. This service adheres strictly to REST principles, ensuring simplicity and compatibility.
@@ -10,7 +12,7 @@ The wein-service provides RESTful CRUD (Create, Read, Update, Delete) operations
 
 This project serves as an application that can be deployed on Kubernetes clusters (e.g., Minikube, EKS) using a CI/CD pipeline powered by ArgoCD. To keep things lightweight and efficient, data is stored using an H2 in-memory database during development.
 
-The service also comes with its own [wein-service-env](https://github.com/Dja111/wein-service-env) repository, which contains the Helm configuration files needed to deploy the application on Minikube.
+The service also push the package of its helm chart on the Docker Registry, which can be directly used as Chart in ArgoCD Application to deploy the application on Minikube.
 
 Additionally, within the Deployment folder, you will find an architecture diagram showcasing the CI/CD pipeline's structure.
 
@@ -35,7 +37,7 @@ To successfully run the deployment script, ensure the following software is inst
 - Helm
 - ArgoCD 
 
-The application will be deployed using Helm, with the Helm charts stored in the wein-service-env repository. Once deployed, the cluster and application will be monitored using Prometheus and Grafana, solving the observability challenge.
+The application will be deployed using Helm, with the Helm Package stored in the Docker Registry. Once deployed, the cluster and application will be monitored using Prometheus and Grafana, solving the observability challenge.
 
 ## Deployment
 - Navigate to the Deployment/local directory.
