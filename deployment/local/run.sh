@@ -8,7 +8,7 @@ if ! minikube delete -p multi-node; then
 fi
 
 echo "Create a cluster with 2 nodes"
-minikube start --nodes 2 -p multi-node --addons metrics-server
+minikube start --nodes 2 -p multi-node --addons metrics-server --addons enable ingress
 
 echo "add argocd Repo"
 helm repo add argo https://argoproj.github.io/argo-helm
