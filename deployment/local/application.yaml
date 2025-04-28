@@ -11,7 +11,7 @@ spec:
   source:
     path: helm/weinservice
     repoURL: "https://github.com/Dja111/wein-service-env"
-    targetRevision: HEAD
+    targetRevision: main
     helm:
       releaseName: weinservice
   syncPolicy:

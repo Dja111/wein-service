@@ -1,64 +1,95 @@
 #!/usr/bin/env bash
 
-set -ex
+set -euo pipefail
 
-echo "Delete the cluster with the profile 'multi-node'"
+# Farben für Ausgaben
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # Keine Farbe
+
+info() {
+  echo -e "${GREEN}[INFO]${NC} $*"
+}
+
+warn() {
+  echo -e "${YELLOW}[WARN]${NC} $*"
+}
+
+error() {
+  echo -e "${RED}[ERROR]${NC} $*"
+}
+
+# --- Skript beginnt ---
+
+info "Deleting the cluster with profile 'multi-node' if it exists..."
 if ! minikube delete -p multi-node; then
-    echo "Cluster 'multi-node' does not exist. Continuing..."
+    warn "Cluster 'multi-node' does not exist. Continuing..."
 fi
 
-echo "Create a cluster with 2 nodes"
-minikube start --nodes 2 -p multi-node --addons metrics-server --addons enable ingress
+info "Creating a new Minikube cluster with 2 nodes..."
+minikube start --nodes 2 -p multi-node --addons metrics-server --addons ingress
 
-echo "add argocd Repo"
+info "Adding Helm repos..."
 helm repo add argo https://argoproj.github.io/argo-helm
-
-echo "Install argoCD"
-helm install argocd argo/argo-cd --version 7.8.28 -n argocd --create-namespace
-
-echo "List all components"
-kubectl get all -n argocd
-
-echo "add Prometheus for monotoring"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-
-echo "update repository"
 helm repo update
 
-echo "Install Prometheus"
+info "Installing ArgoCD..."
+helm install argocd argo/argo-cd --version 7.8.28 -n argocd --create-namespace
+
+info "Waiting for ArgoCD pods to be ready..."
+kubectl rollout status deployment/argocd-server -n argocd --timeout=120s || warn "ArgoCD server rollout timeout!"
+
+info "Listing ArgoCD components:"
+kubectl get all -n argocd
+
+info "Installing Prometheus stack..."
 helm install prometheus prometheus-community/kube-prometheus-stack
 
-echo "show Grafana Password"
+info "Waiting for Prometheus pods to be ready..."
+kubectl rollout status deployment/prometheus-kube-prometheus-stack-operator --timeout=120s || warn "Prometheus operator rollout timeout!"
+
+info "Retrieving Grafana admin password:"
 kubectl get secret prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode; echo
 
-echo "Deploy the application to ArgoCD"
-kubectl create -f application.yaml
+info "Deploying application via ArgoCD..."
+kubectl apply -f application.yaml
 
-echo "wait 50s for creating all the necessary element"
-sleep 50
+info "Waiting for application components to initialize..."
+sleep 30  # oder: `kubectl wait` auf bestimmte Deployments setzen
 
-echo "Get ArgoCD initial password"
+info "Retrieving ArgoCD initial admin password..."
 PWD=$(kubectl get -n argocd secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-echo "The initial password for ArgoCD is: $PWD"
+info "ArgoCD initial password is: $PWD"
 
-echo "Expose the ArgoCD server"
-kubectl port-forward -n argocd svc/argocd-server 8080:443 > port-forward.log 2>&1 &
+info "Port-forwarding ArgoCD server (localhost:8080 -> ArgoCD)..."
+kubectl port-forward -n argocd svc/argocd-server 8080:443 > /dev/null 2>&1 &
+ARGOCD_PID=$!
 
-echo "Login to ArgoCD"
-argocd login localhost:8080 --username admin --password $PWD --insecure
+info "Logging into ArgoCD CLI..."
+sleep 5  # Warten, bis Port-Forward steht
+argocd login localhost:8080 --username admin --password "$PWD" --insecure
 
-echo "List all applications in ArgoCD"
+info "Listing ArgoCD applications:"
 argocd app list
 
-#echo "Retrieve Minikube IP"
-#IP=$(minikube ip -p multi-node)
-#echo "Access the Service at: http://$IP"
+info "Port-forwarding Grafana (localhost:3000 -> Grafana)..."
+kubectl port-forward svc/prometheus-grafana 3000:80 > /dev/null 2>&1 &
+GRAFANA_PID=$!
 
-echo "expose the Grafana service"
-kubectl port-forward svc/prometheus-grafana 3000:80 &
+# --- Unterschiedliches Verhalten je nach OS ---
 
-echo "wait 50s for creating all the necessary element"
-sleep 50
+OS_TYPE=$(uname)
+info "Detected OS: $OS_TYPE"
 
-echo "To access to the App wein-service local on the browser, add to the url the path: /weins, e.g: http://127.0.0.1:51294/weins"
-minikube service weinservice --url
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+    info "Running 'minikube tunnel' for macOS..."
+    minikube tunnel -p multi-node
+else
+    info "Running curl to access the application on non-macOS system..."
+    curl --fail http://localhost/weins || error "Failed to reach http://localhost/weins"
+fi
+
+# Aufräumen (optional)
+trap 'kill $ARGOCD_PID $GRAFANA_PID 2>/dev/null || true' EXIT
