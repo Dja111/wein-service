@@ -9,9 +9,9 @@ spec:
     server: "https://kubernetes.default.svc"
   project: default
   source:
-    path: helm/weinservice
-    repoURL: "https://github.com/Dja111/wein-service-env"
-    targetRevision: HEAD
+    chart: weinservice
+    repoURL: "registry-1.docker.io/dja111"
+    targetRevision: 0.1.0-17eb581011d6be14326da4a4aaddb352e21b9564
     helm:
       releaseName: weinservice
   syncPolicy:
