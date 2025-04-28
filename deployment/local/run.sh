@@ -48,16 +48,19 @@ info "Installing Prometheus stack..."
 helm install prometheus prometheus-community/kube-prometheus-stack
 
 info "Waiting for Prometheus pods to be ready..."
-kubectl rollout status deployment/prometheus-kube-prometheus-stack-operator --timeout=120s || warn "Prometheus operator rollout timeout!"
+kubectl rollout status deployment/prometheus-kube-prometheus-operator --timeout=120s || warn "Prometheus operator rollout timeout!"
 
 info "Retrieving Grafana admin password:"
 kubectl get secret prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode; echo
 
 info "Deploying application via ArgoCD..."
-kubectl apply -f application.yaml
+kubectl apply -f https://github.com/Dja111/apps-gitops/blob/main/init.yaml
 
-info "Waiting for application components to initialize..."
-sleep 30  # oder: `kubectl wait` auf bestimmte Deployments setzen
+info "Waiting for wein-service pods to be ready..."
+kubectl rollout status deployment/weinservice --timeout=120s || warn " Wein-service rollout timeout!"
+
+#info "Waiting for application components to initialize..."
+#sleep 30  # oder: `kubectl wait` auf bestimmte Deployments setzen
 
 info "Retrieving ArgoCD initial admin password..."
 PWD=$(kubectl get -n argocd secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
@@ -88,8 +91,8 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
     minikube tunnel -p multi-node
 else
     info "Running curl to access the application on non-macOS system..."
-    curl --fail http://localhost/weins || error "Failed to reach http://localhost/weins"
+    curl --resolve "localhost:80:$( minikube ip -p multi-node )" -i http://localhost/weins  || error "Failed to reach http://localhost/weins"
 fi
 
 # Aufräumen (optional)
-trap 'kill $ARGOCD_PID $GRAFANA_PID 2>/dev/null || true' EXIT
+#trap 'kill $ARGOCD_PID $GRAFANA_PID 2>/dev/null || true' EXIT

@@ -158,8 +158,17 @@ jobs:
       - run: |
           sed -i "s,tag:.*,tag:\ ${{ needs.docker-build-push.outputs.sha }}," deployment/helm/weinservice/values.yaml
           sed -i "s,version:.*,version:\ 0.1.0-${{ needs.docker-build-push.outputs.sha }}," deployment/helm/weinservice/Chart.yaml
-          sed -i "s,targetRevision:.*,targetRevision:\ 0.1.0-${{ needs.docker-build-push.outputs.sha }}," deployment/local/application.yaml
           helm package deployment/helm/weinservice
           helm registry login registry-1.docker.io --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
           helm push *.tgz oci://registry-1.docker.io/dja111
+          git config --global user.email aurel.donfak@gmail.com && git config --global user.name Dja111
+          echo "cloning apps-gitops repo"
+          git clone https://oauth2:${{ secrets.G_TOKEN }}@github.com/${{ github.repository_owner }}/apps-gitops.git
+          cd apps-gitops
+          echo "checkout source branch"
+          git checkout main
+          echo "updating targetRevision in application.yaml file of weinservice portal (wspo)"
+          sed -i "s,targetRevision:.*,targetRevision:\ 0.1.0-${{ needs.docker-build-push.outputs.sha }}," apps/wspo/wein-service.yaml
+          git add . && git commit -m "update targetRevision by ci-pipeline"
+          git push
         
