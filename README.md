@@ -54,6 +54,11 @@ The observability stack consists of:
 
 These tools provide insight into the cluster and application performance.
 
+You can add the following Grafana Dashboard:
+
+- [Spring Boot & Endpoint Metrics 2.0](https://grafana.com/grafana/dashboards/17053-spring-boot-statistics-endpoint-metrics/)
+- [Spring Boot 3.x Statistics](https://grafana.com/grafana/dashboards/19004-spring-boot-statistics/)
+
 ## Maintainer
 This project is maintains by Jospin Aurèle Donfack
 
