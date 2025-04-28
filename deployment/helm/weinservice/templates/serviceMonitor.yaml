@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.serviceMonitor.name }}
+  labels:
+    release: {{ .Values.serviceMonitor.release }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "weinservice.selectorLabels" . | nindent 6 }}
+    #app: {{ include "weinservice.fullname" . }}
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      metricRelabelings:
+      - action: replace
+        regex: *
+        replacement: {{ include "weinservice.fullname" }}
+        targetLabel: application
+  namespaceSelector:
+    matchNames:
+      - default
