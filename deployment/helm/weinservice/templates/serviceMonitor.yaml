@@ -15,7 +15,7 @@ spec:
       interval: 15s
       metricRelabelings:
       - action: replace
-        regex: *
+        regex: .*
         replacement: {{ include "weinservice.fullname" }}
         targetLabel: application
   namespaceSelector:
