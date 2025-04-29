@@ -54,7 +54,7 @@ info "Retrieving Grafana admin password:"
 kubectl get secret prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode; echo
 
 info "Deploying application via ArgoCD..."
-kubectl apply -f https://github.com/Dja111/apps-gitops/blob/main/init.yaml
+kubectl apply -f https://raw.githubusercontent.com/Dja111/apps-gitops/refs/heads/main/init.yaml
 
 info "Waiting for wein-service pods to be ready..."
 kubectl rollout status deployment/weinservice --timeout=120s || warn " Wein-service rollout timeout!"
