@@ -4,6 +4,17 @@ This service is based on the microservice architectur.
 
 PS: This branch demonstrates an alternative CI setup that does not use the [wein-service-env](https://github.com/Dja111/wein-service-env) repository.
 
+This repository provides two approaches in two differents branch for deploying the wein-service application to ArgoCD:
+
+- Centralized Deployment (Branch: feat-alternativ-ci): Utilizes a centralized [apps-gitops](https://github.com/Dja111/apps-gitops) repository for managing application configurations.
+- Decentralized Deployment (Branch: main): Uses an environment-specific repository with multiple environments (e.g., dev, int, qa, review). In this case: [wein-service-env](https://github.com/Dja111/wein-service-env)
+
+The CI Pipeline can be seen in each branch by actions in the navbar
+
+## Solution Typ
+
+Centralized Deployment
+
 ## Description
 
 The wein-service provides RESTful CRUD (Create, Read, Update, Delete) operations for managing wein models. This service adheres strictly to REST principles, ensuring simplicity and compatibility.

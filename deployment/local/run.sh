@@ -56,11 +56,11 @@ kubectl get secret prometheus-grafana -o jsonpath="{.data.admin-password}" | bas
 info "Deploying application via ArgoCD..."
 kubectl apply -f https://raw.githubusercontent.com/Dja111/apps-gitops/refs/heads/main/init.yaml
 
-info "Waiting for wein-service pods to be ready..."
-kubectl rollout status deployment/weinservice --timeout=120s || warn " Wein-service rollout timeout!"
+#info "Waiting for wein-service pods to be ready..."
+#kubectl rollout status deployment/weinservice --timeout=120s || warn " Wein-service rollout timeout!"
 
-#info "Waiting for application components to initialize..."
-#sleep 30  # oder: `kubectl wait` auf bestimmte Deployments setzen
+info "Waiting for application components to initialize..."
+sleep 30  # oder: `kubectl wait` auf bestimmte Deployments setzen
 
 info "Retrieving ArgoCD initial admin password..."
 PWD=$(kubectl get -n argocd secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
