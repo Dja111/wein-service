@@ -16,7 +16,7 @@ spec:
       metricRelabelings:
       - action: replace
         regex: .*
-        replacement: {{ include "weinservice.fullname" }}
+        replacement: {{ include "weinservice.fullname" . }}
         targetLabel: application
   namespaceSelector:
     matchNames:
